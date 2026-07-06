@@ -1,76 +1,14 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>能源芯智社｜光伏储能逆控一体机精选</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border}
-        body{font-family:微软雅黑;background:#f5f7fa;padding:15px}
-        header{background:#0f52ba;color:white;padding:20px;border-radius:10px;margin-bottom:20px}
-        .search-box{display:flex;gap:10px;margin-bottom:20px}
-        #search{flex:1;padding:10px;border:1px #ccc solid;border-radius:6;font-size:16px}
-        .sort-btn{padding:10px 16px;background:#2385bb;color:white;border:none;border-radius:6;cursor:pointer}
-        .container{display:grid;grid-template-columns: repeat(auto-fill, minmax(280px));gap:20px}
-        .card{background:white;border-radius:10px;overflow;box-shadow:0 2px 8px #ddd;padding:12px}
-        .card img{width:100%;height:200px;object-fit:cover;border-radius:6px}
-        .card h3{font-size:15px;margin:10px 0;color:#222;min-height:44px}
-        .price{color:#e63946;font-size:18px;font-weight:bold}
-        .commission{color:#2a9d3f;font-size:14px;margin:6px 0}
-        .buy{display:block;width:100%;text-align:center;background:#0f52ba;color:white;padding:10px;border-radius:6;text-decoration:none;margin-top:10px}
-    </style>
-</head>
-<body>
-<header>
-    <h1>能源芯智社 · 光伏储能逆控一体机精选</h1>
-    <p>家用/商用离并网太阳能设备，点击直达淘宝下单，本站赚取推广佣金</p>
-</header>
-<div class="search-box">
-    <input id="search" placeholder="搜索逆变器、储能电池、MPPT一体机">
-    <button class="sort-btn" onclick="sortPrice()">价格排序</button>
-</div>
-<div class="container" id="goodsList">
-    <!-- 商品卡片，示例1个，完整商品全部内置 -->
-    <div class="card">
-        <img src="//img.alicdn.com/i2/2219310490523/O1CN01cnsyP21FjaEcRI46r_!!2219310490523.jpg">
-        <h3>6.2KW大功率纯正弦波太阳能光伏MPPT逆控一体机</h3>
-        <div class="price">到手价：1357元</div>
-        <div class="commission">预估佣金：18.32元</div>
-        <a class="buy" href="https://s.click.taobao.com/t?e=m%3D2%26s%3DDW3vWkiVbLBw4vFB6t2Z2ueEDrYVVa64LKpWJ%2Bin0XLjf2vlNIV67jIk8q7%2FYTicc4zWPc6e821NxucSbtdbCCoLohCEjdQwn1lfHh8lNdrMGxwB%2FBZQLGbkNF96ih6F1qrpxiwMoCNxc1AtbZGVSxnT89Z9WRT93NV0NHsK%2Fr7NEPXytV9ALtCLThlbPuuZLb93Df8fOziFmlIWlSMQ6skdOLoOiPUN192C2UfGHsbtAhOnglOs%2BImOMA1FTIwgsskK3kHVM%2BqjO9AJYjY8CXJ%2BwEVkOqHFryMUxYfMgZOb57v56TJljSaspH8L3NOe" target="_blank">立即购买</a>
-    </div>
-</div>
-<script>
-const goods = [
-    {img:"//img.alicdn.com/i2/2219310490523/O1CN01cnsyP21FjaEcRI46r_!!2219310490523.jpg",name:"6.2KW大功率纯正弦波太阳能光伏高频离并网MPPT逆控一体机",price:1357,com:18.32,link:"https://s.click.taobao.com/t?e=m%3D2%26s%3DDW3vWkiVbLBw4vFB6t2Z2ueEDrYVVa64LKpWJ%2Bin0XLjf2vlNIV67jIk8q7%2FYTicc4zWPc6e821NxucSbtdbCCoLohCEjdQwn1lfHh8lNdrMGxwB%2FBZQLGbkNF96ih6F1qrpxiwMoCNxc1AtbZGVSxnT89Z9WRT93NV0NHsK%2Fr7NEPXytV9ALtCLThlbPuuZLb93Df8fOziFmlIWlSMQ6skdOLoOiPUN192C2UfGHsbtAhOnglOs%2BImOMA1FTIwgsskK3kHVM%2BqjO9AJYjY8CXJ%2BwEVkOqHFryMUxYfMgZOb57v56TJljSaspH8L3NOe"},
-    {img:"//img.alicdn.com/i4/2217039020699/O1CN010Q2Wpg1H2ByGPsFtY_!!2217039020699-0-scmitem176000.jpg",name:"家用堆叠式太阳能储能电池家庭光伏发电系统逆控电源一体机",price:6111.6,com:550.04,link:"https://s.click.taobao.com/t?e=m%3D2%26s%3Dx72WVitJuvpw4vFB6t2Z2ueEDrYVVa64LKpWJ%2Bin0XLjf2vlNIV67jIk8q7%2FYTicVkTGlWTgx8lNxucSbtdbCCoLohCEjdQwn1lfHh8lNdrMGxwB%2FBZQLGbkNF96ih6F1qrpxiwMoCNxc1AtbZGVSwWY7be9BJb8mh7xeHjVeJ3NEPXytV9ALtCLThlbPuuZLb93Df8fOziMZqOko7sIk21O3ZMK%2BjsJx5F5tx40WvgIU1FlP%2BxTIcm%2B3JrkYfrQF7OT0CjzQIO0zvIVVx%2BPc2%2F51BzEHetfDYc3pS6ta7wRRYFC1X3Iidg3jpQHhEoH"},
-    {img:"//img.alicdn.com/i3/2208552066169/O1CN01eGvIuh1vRSJdGtnDY_!!0-item_pic.jpg",name:"泰琪丰11KW离网高频家用光伏逆控一体机",price:1000,com:11.48,link:"https://s.click.taobao.com/t?e=m%3D2%26s%3DEQWGAOOqE0Zw4vFB6t2Z2ueEDrYVVa64K7Vc7tFgwiHjf2vlNIV67jIk8q7%2FYTicc4zWPc6e821NxucSbtdbCCoLohCEjdQwn1lfHh8lNdrMGxwB%2FBZQLGbkNF96ih6F1qrpxiwMoCNxc1AtbZGVS3u0KUI60lthjzEAHrqvRBDNEPXytV9ALtCLThlbPuuZLb93Df8fOzhatKBBv2F1mjBAhTojvp0mCASuoGpMhVzWygY1cEOuUmE25E75XnF8pxdWwysOxTO0zvIVVx%2BPc2%2F51BzEHetfuu3WXMcfmJVJX8E%2BOGWhigyW7mQwqx7e"}
-];
-let sortAsc = true;
-function render(list){
-    const wrap = document.getElementById("goodsList");
-    wrap.innerHTML = "";
-    list.forEach(item=>{
-        wrap.innerHTML += `
-        <div class="card">
-            <img src="${item.img}">
-            <h3>${item.name}</h3>
-            <div class="price">到手价：${item.price}元</div>
-            <div class="commission">预估佣金：${item.com}元</div>
-            <a class="buy" href="${item.link}" target="_blank">立即购买</a>
-        </div>`
-    })
-}
-render(goods);
-document.getElementById("search").oninput = function(){
-    const kw = this.value.toLowerCase();
-    const filter = goods.filter(v=>v.name.toLowerCase().includes(kw));
-    render(filter);
-}
-function sortPrice(){
-    sortAsc = !sortAsc;
-    goods.sort((a,b)=>sortAsc ? a.price-b.price : b.price-a);
-    render(goods);
-}
-</script>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>应用标题</title>
+    <link href="https://lf3-static.bytednsdoc.com/obj/eden-cn/ylcylz_fsph_ryhs/ljhwZthlaukjlkulzlp/feisuda/feisuda.svg" rel="shortcut icon"/>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
 </html>
