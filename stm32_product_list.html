@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STM32 精选好物</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg: #080c14;
+    --bg2: #0d1525;
+    --card-bg: #111827;
+    --card-hover: #1a2235;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent-glow: rgba(0, 212, 255, 0.15);
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #475569;
+    --border: rgba(255,255,255,0.06);
+    --border2: rgba(0, 212, 255, 0.2);
+    --tag-bg: rgba(0, 212, 255, 0.1);
+    --tag-color: #00d4ff;
+    --coupon-bg: linear-gradient(135deg, #7c3aed, #a855f7);
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 背景装饰 */
+  .bg-grid {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-orb {
+    position: fixed; border-radius: 50%;
+    filter: blur(120px); pointer-events: none; z-index: 0;
+  }
+  .bg-orb-1 { width: 600px; height: 600px; background: rgba(0,212,255,0.06); top: -200px; right: -100px; }
+  .bg-orb-2 { width: 500px; height: 500px; background: rgba(124,58,237,0.07); bottom: -150px; left: -100px; }
+
+  /* 顶部导航 */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,12,20,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+  }
+  .header-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: center; gap: 20px;
+    height: 68px;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 20px; font-weight: 800;
+    background: linear-gradient(90deg, #00d4ff, #7c3aed);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .logo svg { width: 28px; height: 28px; }
+  .logo-sub { font-size: 11px; color: var(--text3); font-weight: 400; letter-spacing: 2px; text-transform: uppercase; }
+
+  .header-search {
+    flex: 1; max-width: 560px;
+    position: relative;
+  }
+  .header-search input {
+    width: 100%; height: 42px; border-radius: 21px;
+    background: var(--card-bg); border: 1px solid var(--border);
+    color: var(--text); font-size: 14px; font-family: inherit;
+    padding: 0 20px 0 46px;
+    outline: none;
+    transition: all 0.3s;
+  }
+  .header-search input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .header-search input::placeholder { color: var(--text3); }
+  .header-search .search-icon {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    color: var(--text3); pointer-events: none;
+  }
+  .header-search .clear-btn {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--text3); cursor: pointer;
+    font-size: 16px; line-height: 1; display: none; padding: 2px 6px;
+  }
+  .header-search .clear-btn.show { display: block; }
+
+  .header-stats {
+    display: flex; align-items: center; gap: 24px; flex-shrink: 0;
+    font-size: 13px; color: var(--text2);
+  }
+  .header-stats span { color: var(--accent); font-weight: 600; }
+
+  /* 主容器 */
+  .container {
+    max-width: 1400px; margin: 0 auto;
+    padding: 32px 40px 60px;
+    position: relative; z-index: 1;
+  }
+
+  /* 页面标题 */
+  .page-title {
+    margin-bottom: 28px;
+  }
+  .page-title h1 {
+    font-size: 28px; font-weight: 800; line-height: 1.3;
+    background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .page-title p { font-size: 14px; color: var(--text3); }
+
+  /* 控制栏 */
+  .controls {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  /* 分类标签 */
+  .filter-section {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-label {
+    font-size: 12px; color: var(--text3); font-weight: 500;
+    text-transform: uppercase; letter-spacing: 1px; margin-right: 4px;
+  }
+  .filter-btn {
+    padding: 7px 16px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text2); font-size: 13px; font-family: inherit;
+    cursor: pointer; transition: all 0.25s;
+    white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active {
+    background: var(--accent); border-color: var(--accent);
+    color: #080c14; font-weight: 600;
+  }
+
+  /* 排序 */
+  .sort-section {
+    display: flex; align-items: center; gap: 8px;
+    margin-left: auto;
+  }
+  .sort-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+  .sort-select {
+    padding: 7px 32px 7px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text); font-size: 13px; font-family: inherit;
+    outline: none; cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: all 0.25s;
+  }
+  .sort-select:focus { border-color: var(--accent); }
+  .sort-select option { background: #1a2235; }
+
+  /* 商品网格 */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  /* 商品卡片 */
+  .product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex; flex-direction: column;
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--border2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,212,255,0.1), 0 0 40px rgba(0,212,255,0.06);
+  }
+
+  .card-img-wrap {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #1a2235, #0d1525);
+    aspect-ratio: 4/3;
+  }
+  .card-img-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.5s;
+    display: block;
+  }
+  .product-card:hover .card-img-wrap img { transform: scale(1.08); }
+
+  .card-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--coupon-bg);
+    color: #fff; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 12px rgba(124,58,237,0.5);
+  }
+  .card-badge.hot {
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    box-shadow: 0 2px 12px rgba(245,158,11,0.4);
+  }
+  .card-img-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(8,12,20,0.5) 0%, transparent 50%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .product-card:hover .card-img-overlay { opacity: 1; }
+
+  .card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+  .card-title {
+    font-size: 14px; font-weight: 500; line-height: 1.5;
+    color: var(--text); display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 42px;
+  }
+
+  .card-meta {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .card-tag {
+    padding: 3px 9px; border-radius: 4px;
+    background: var(--tag-bg); color: var(--tag-color);
+    font-size: 11px; font-weight: 500;
+    border: 1px solid rgba(0,212,255,0.15);
+  }
+  .card-tag.brand {
+    background: rgba(124,58,237,0.1);
+    color: #a78bfa;
+    border-color: rgba(124,58,237,0.2);
+  }
+
+  .card-shop {
+    font-size: 12px; color: var(--text3);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .card-shop::before {
+    content: '🏪'; font-size: 11px;
+  }
+
+  .card-bottom {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-top: auto; padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .card-price { display: flex; flex-direction: column; gap: 1px; }
+  .price-main { font-size: 22px; font-weight: 800; color: #f43f5e; line-height: 1; }
+  .price-main .rmb { font-size: 13px; font-weight: 400; }
+  .price-orig { font-size: 12px; color: var(--text3); text-decoration: line-through; }
+  .card-sales {
+    font-size: 12px; color: var(--text2); text-align: right;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+  }
+  .sales-num { color: var(--accent); font-weight: 600; }
+
+  /* 空状态 */
+  .empty-state {
+    grid-column: 1/-1; text-align: center; padding: 80px 20px;
+    color: var(--text3);
+  }
+  .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.3; }
+  .empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text2); }
+  .empty-state p { font-size: 14px; }
+
+  /* 搜索高亮 */
+  .search-highlight { background: rgba(0,212,255,0.2); color: var(--accent); border-radius: 2px; }
+
+  /* 分页提示 */
+  .results-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; padding: 12px 18px;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px; color: var(--text2);
+  }
+  .results-bar strong { color: var(--accent); }
+
+  /* 浮动回到顶部 */
+  .back-top {
+    position: fixed; bottom: 32px; right: 32px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, #00d4ff, #7c3aed);
+    border: none; color: #fff; font-size: 18px;
+    cursor: pointer; z-index: 99;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+    opacity: 0; transform: translateY(20px);
+    transition: all 0.3s; pointer-events: none;
+  }
+  .back-top.show { opacity: 1; transform: translateY(0); pointer-events: all; }
+  .back-top:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,212,255,0.4); }
+
+  /* 动画 */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .product-card { animation: fadeInUp 0.4s ease backwards; }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .container { padding: 20px 16px; }
+    .header { padding: 0 16px; }
+    .header-stats { display: none; }
+    .controls { flex-direction: column; align-items: flex-start; }
+    .sort-section { margin-left: 0; }
+    .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .card-title { font-size: 13px; -webkit-line-clamp: 2; min-height: 39px; }
+    .price-main { font-size: 18px; }
+  }
+  @media (max-width: 480px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .card-body { padding: 12px; gap: 8px; }
+    .card-title { font-size: 12px; min-height: 36px; }
+  }
+
+  /* 滚动条美化 */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--card-hover); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="28" rx="8" fill="url(#logoGrad)"/>
+        <path d="M7 14h14M14 7v14M10 10l8 8M18 10l-8 8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28">
+            <stop offset="0%" stop-color="#00d4ff"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div>
+        <div>STM32 精选好物</div>
+        <div class="logo-sub">电子元器件</div>
+      </div>
+    </div>
+    <div class="header-search">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="搜索商品名称、品牌、分类…" autocomplete="off">
+      <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="header-stats">
+      共 <span id="totalCount">--</span> 件商品
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="page-title">
+    <h1>🔌 STM32 微控制器 · 精选推荐</h1>
+    <p>来自淘宝官方平台的精选商品，涵盖开发板、核心板、单片机芯片、仿真器等全品类</p>
+  </div>
+
+  <div class="controls">
+    <div class="filter-section" id="filterBtns">
+      <span class="filter-label">分类</span>
+    </div>
+    <div class="sort-section">
+      <span class="sort-label">排序</span>
+      <select class="sort-select" id="sortSelect" onchange="render()">
+        <option value="default">默认排序</option>
+        <option value="price_asc">价格 ↑ 低到高</option>
+        <option value="price_desc">价格 ↓ 高到低</option>
+        <option value="sales_desc">销量 从高到低</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="results-bar" id="resultsBar" style="display:none">
+    <span>找到 <strong id="filteredCount">0</strong> 件商品</span>
+    <span id="filterTag"></span>
+  </div>
+
+  <div class="product-grid" id="productGrid"></div>
+</main>
+
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ==================== 数据 ====================
+const PRODUCTS = [
+{id:"W68Rg0NIaf20K6mQddtXQdIQta-MdDWmzTAKJXzAXaHRJ",name:"基于stm32单片机智能农业温湿度大棚灌溉监测物联网成品设计定做",img:"//img.alicdn.com/i1/2562591438/O1CN01RKfJ0M1MUecaaZXFK_!!2562591438.jpg",shop:"",leaf:"微处理器/微控制器/单片机",price:97,origPrice:108,sales:0,coupon:0,link:"https://s.click.taobao.com/Z3V8KPk"},
+{id:"zevQXGAsXfaWNkJGzzFzWGUdt4-MdDWmzTVK0aeBvPhRy",name:"基于STM32单片机的智能交通灯设计 车流量检测 无线蓝牙WIFI套件",img:"//img.alicdn.com/i1/602142149/O1CN01oeZUZL1RkHocFooYz_!!602142149.jpg",shop:"",leaf:"微处理器/微控制器/单片机",price:100,origPrice:100,sales:0,coupon:5,link:"https://s.click.taobao.com/jqDOMYk"},
+{id:"omvZoGdS8fK6roJy44U5yxSntN-aDgjzQTdqjW0YPeuga",name:"STM32F407ZGT6核心板ARM开发板F407最小系统板单片机ZGT6学习板",img:"//img.alicdn.com/i2/2218942665800/O1CN01DBh8DP1siSClS9C0l_!!4611686018427384904-0-item_pic.jpg",shop:"",leaf:"开发板/学习板/评估板/工控板",price:10.71,origPrice:11.9,sales:0,coupon:0,link:"https://s.click.taobao.com/WnZ8KPk"},
+{id:"rYvOjGycRfVmbQkaJJuKjOiqtZ-wDPnxqTbnKGxjxRC4",name:"绿深STM32F103RCT6系统板开发板核心板SPI下载SWD仿真接口 typec",img:"//img.alicdn.com/i4/2206446147687/O1CN01aImPPX26ehdGLLGyp_!!4611686018427385959-0-item_pic.jpg",shop:"",leaf:"开发板/学习板/评估板/工控板",price:10.7,origPrice:14.8,sales:0,coupon:0,link:"https://s.click.taobao.com/Wp2PMYk"},
+{id:"DVjkKYVI9f52VW6ZOOhRgmijtn-oDA7zXTBworQmV0IJz",name:"基于STM32F103单片机设计嵌入式硬件软件开发DIY套件成品实物#Z1",img:"//img.alicdn.com/i3/4079150495/O1CN01tOOjhl1FWkq7vRiqJ_!!4079150495.jpg",shop:"",leaf:"微处理器/微控制器/单片机",price:79.2,origPrice:88,sales:0,coupon:0,link:"https://s.click.taobao.com/I4u8KPk"},
+{id:"YJo9J96yIafXQyeRovQHKB3T2t6-RBaNkQcVyYrJD5mfG",name:"touglesy STM32开发板 STM32F103RCT6最小系统板 嵌入式学习板ARM",img:"//img.alicdn.com/i4/2206821743459/O1CN0136RSRe1bQH70VxIm9_!!4611686018427386723-0-item_pic.jpg",shop:"TOUGLESY",leaf:"开发板/学习板/评估板/工控板",price:18.84,origPrice:20.94,sales:0,coupon:0,link:"https://s.click.taobao.com/Jy7PMYk"},
+{id:"y3WY3Yw2ief2Rj3yrbRFrwOivtA-OdkwDQTZmzakjWVC6",name:"鹿小班STM32F103C8T6核心板C8T6小系统板单片机开发板Type-C口",img:"//img.alicdn.com/i3/2218942665800/O1CN012nFEh71siSJoQGwPx_!!4611686018427384904-0-item_pic.jpg",shop:"",leaf:"开发板/学习板/评估板/工控板",price:13.4,origPrice:14.9,sales:0,coupon:0,link:"https://s.click.taobao.com/g2DPMYk"},
+{id:"nJxQJQm2Hof3wKRBVNwtAxOC0tP-X0KezripBB8W9Ajt3",name:"欣薇STM32F103C8T6核心板 C6T6 STM32开发板单片机最小系统实验板",img:"//img.alicdn.com/i2/2201492025661/O1CN01SLSvDq1rgnG9VLqoP_!!4611686018427384125-0-item_pic.jpg",shop:"欣薇",leaf:"微处理器/微控制器/单片机",price:9.09,origPrice:10.09,sales:0,coupon:0,link:"https://s.click.taobao.com/U1V8KPk"},
+{id:"Xqodqd35SKfXv8zw4VvH0aKSBtg-pDW7zXTRjxndAaNUA",name:"菡诚B站同款STM32桌宠单片机小狗仿生机器人2025新款电子狗闪电狗",img:"//img.alicdn.com/i1/2206684547563/O1CN01zCIsAT25juUK7LVdb_!!4611686018427382251-0-item_pic.jpg",shop:"菡诚",leaf:"机器人/机械臂",price:17.8,origPrice:19.8,sales:0,coupon:0,link:"https://s.click.taobao.com/OC7QMYk"},
+{id:"zDxYDYejhXfaWNkJGoWtzBZCdt4-0gVkDjSNZVNppnZSq",name:"STM32F103C8T6核心板 STM32单片机开发板 科协套件 C6T6小系统板",img:"//img.alicdn.com/i2/2209130806501/O1CN01j8REVx1xtVwPL413c_!!4611686018427387109-0-item_pic.jpg",shop:"贝科姆",leaf:"开发板/学习板/评估板/工控板",price:5.85,origPrice:6.5,sales:0,coupon:0,link:"https://s.click.taobao.com/9wq7KPk"},
+{id:"OqdY6eJJHgf6vxR8jaehVAaiMtJ-gjYngkTp8WP76Rohv",name:"原装STM32F407ZGT6核心板STM32开发板STM32F103ZET6最小系统板",img:"//img.alicdn.com/i4/2209130806501/O1CN01rCiKLr1xtVwU1A11c_!!4611686018427387109-0-item_pic.jpg",shop:"贝科姆",leaf:"开发板/学习板/评估板/工控板",price:14.3,origPrice:15.9,sales:0,coupon:0,link:"https://s.click.taobao.com/QA7QMYk"},
+{id:"mPD4ojrQT8fJDzpYjWbFrJnhot3-OdkwDQT0dagWQOJu9",name:"工业级STM32F407ZGT6开发板原装芯片嵌入式单片机学习板",img:"//img.alicdn.com/i2/2206684547563/O1CN0183RNkE25juY4bfI5e_!!4611686018427382251-0-item_pic.jpg",shop:"菡诚",leaf:"开发板/学习板/评估板/工控板",price:8.64,origPrice:9.6,sales:0,coupon:0,link:"https://s.click.taobao.com/ForPMYk"},
+{id:"RgBYwA7Ktafjr7D6QmKHkJqcMt6-0gVkDjSBqvaqe5qSq",name:"STM32F103C8T6开发板芯片单片机最小系统板核心板同款江科大科协",img:"//img.alicdn.com/i1/2201469937443/O1CN01Qxh5Jj24qx0T8wX3y_!!4611686018427381539-0-item_pic.jpg",shop:"WGSD",leaf:"微处理器/微控制器/单片机",price:9.3,origPrice:12.3,sales:0,coupon:3,link:"https://s.click.taobao.com/gjv7KPk"},
+{id:"ANb2Q9Vofgf4jkBYGyxU852hvtn-VXa9zyukGY70nzRFgp",name:"STM32F407VGT6 STM32F407VET6开发板 STM32系统板 ARM学习核心板",img:"//img.alicdn.com/i3/2206684547563/O1CN013XPgDe25juaudPnB6_!!4611686018427382251-0-item_pic.jpg",shop:"菡诚",leaf:"开发板/学习板/评估板/工控板",price:9.7,origPrice:14,sales:0,coupon:0,link:"https://s.click.taobao.com/lUdOMYk"},
+{id:"POdYRpKbUof6vKZGw4nhx6wfPt6-gjYngkTpwmN9G6ytv",name:"STM32F103C8T6开发板芯片单片机最小系统板核心板c6t6 江科大科协",img:"//img.alicdn.com/i2/738263294/O1CN01YEuNAB1aChmOq3z7a_!!4611686018427379966-0-item_pic.jpg",shop:"RISYM/维芯",leaf:"微处理器/微控制器/单片机",price:11.57,origPrice:12.87,sales:0,coupon:0,link:"https://s.click.taobao.com/NZiOMYk"},
+{id:"Q0dpn5o6FafB793bz0oCW0VfatQ-7JDWAvuOYG6yjrdTVb",name:"STM32单片机火灾烟雾温度报警器防火防盗短信火焰设计成品定制",img:"//img.alicdn.com/i1/2206567198359/O1CN01NuKJ7X2BcTdjGzdGT_!!2206567198359.jpg",shop:"other",leaf:"微处理器/微控制器/单片机",price:80.6,origPrice:128,sales:0,coupon:0,link:"https://s.click.taobao.com/82Q8KPk"},
+{id:"xnDZQjA2tZfq9gyJ2aASRP2iAt9-9wKVx8sOedKady3uX",name:"贝科姆STM32H743VGT6开发板STM32H7B0VBT6核心板STM32工控系统板",img:"//img.alicdn.com/i1/2209130806501/O1CN01zqDdWt1xtVrlSMvf7_!!4611686018427387109-0-item_pic.jpg",shop:"贝科姆",leaf:"开发板/学习板/评估板/工控板",price:10.7,origPrice:38,sales:0,coupon:0,link:"https://s.click.taobao.com/uETOMYk"},
+{id:"qkDqZz5xS0f4ZnVodOzFDPmSWt0-MdDWmzT4xyNjgyPiR",name:"W5500以太网网络模块W5100 TCP/IP协议51/STM32驱动开发板28J60",img:"//img.alicdn.com/i4/2207691322/O1CN01ovnOnT1LdWkT0SScE_!!4611686018427384378-0-item_pic.jpg",shop:"TELESKY",leaf:"开发板/学习板/评估板/工控板",price:17.36,origPrice:19.36,sales:0,coupon:0,link:"https://s.click.taobao.com/UGyNMYk"},
+{id:"y3D269Waief2Rj3yrKDFr6qsvtA-QdapKBTwg2Gpb0WSe",name:"STM32F103C8T6 STM32开发板系统板单片机C6T6核心板 学习板实验板",img:"//img.alicdn.com/i4/2209130806501/O1CN01EKWdh51xtVxOymO14_!!4611686018427387109-0-item_pic.jpg",shop:"贝科姆",leaf:"开发板/学习板/评估板/工控板",price:5.85,origPrice:6.5,sales:0,coupon:0,link:"https://s.click.taobao.com/17tNMYk"},
+{id:"xnDZQjAvCZfq9gyJ2aASRPDUAt9-W4awzOuXy7VkxxBUm8",name:"STM32H7开发板沉金工艺STM32H743vgt6核心板快速处理嵌入式套件",img:"//img.alicdn.com/i2/2218942665800/O1CN01DwHOOE1siSIUpZtF2_!!4611686018427384904-0-item_pic.jpg",shop:"",leaf:"开发板/学习板/评估板/工控板",price:10.7,origPrice:11.9,sales:0,coupon:0,link:"https://s.click.taobao.com/zSdOMYk"},
+{id:"joXrAxRuAfJmojz9bmCNZzcJte-gjYngkT2Zp2y8Z0U2",name:"STM32F103RCT6系统板 32开发板 STM32核心板 TFT屏 带ISP一键下载",img:"//img.alicdn.com/i3/2206446147687/O1CN01DuafHx26ehRE77FHm_!!0-item_pic.jpg",shop:"LSSZ/绿深",leaf:"开发板/学习板/评估板/工控板",price:10.7,origPrice:11.9,sales:0,coupon:0,link:"https://s.click.taobao.com/LQ3OMYk"},
+{id:"G6AP0dpHgfYvKWnzRvS6XYUQtJ-RBaNkQcVX4r6VzBFYR",name:"STM32开发板最小系统板STM32F103RCT6开发板 TFT屏一键串口下载",img:"//img.alicdn.com/i4/2209130806501/O1CN0125yMNu1xtVu1HshbV_!!4611686018427387109-0-item_pic.jpg",shop:"贝科姆",leaf:"开发板/学习板/评估板/工控板",price:10.7,origPrice:37.8,sales:0,coupon:0,link:"https://s.click.taobao.com/dViOMYk"},
+{id:"mmwy255T8fJDzpYj2DCrPxfot3-bBa3z6cBaVmmaV6UWY",name:"STM32F103C8T6 STM32开发板小系统板单片机核心板 学习板实验板",img:"//img.alicdn.com/i2/2087020248/O1CN01xMSv4m1DhdBn35c2d_!!0-item_pic.jpg",shop:"ZAZR",leaf:"开发板/学习板/评估板/工控板",price:8.55,origPrice:9.5,sales:0,coupon:0,link:"https://s.click.taobao.com/gfv7KPk"},
+{id:"2A4oZXAIvfgNrxZd6NS6b9IDtD-qDxqwYTrAZvqd3XS8",name:"STM32F103C8T6 STM32开发板小系统板单片机核心板实验板 学习板",img:"//img.alicdn.com/i1/2201469937443/O1CN01tyPdPz24qx2gFPdCB_!!4611686018427381539-0-item_pic.jpg",shop:"WGSD",leaf:"开发板/学习板/评估板/工控板",price:6.55,origPrice:11,sales:0,coupon:2,link:"https://s.click.taobao.com/qpq7KPk"},
+{id:"em3xYeWfRfd27B9gv2U6j8Uzt0-NnDBkQunkmpkv5zF7",name:"鹿小班offloader离线下载器 STM32脱机编程烧录仿真器SWD",img:"//img.alicdn.com/i4/2218942665800/O1CN01TNrhuc1siSJMmvne2_!!4611686018427384904-0-item_pic.jpg",shop:"",leaf:"开发板/学习板/评估板/工控板",price:28.5,origPrice:35,sales:0,coupon:0,link:"https://s.click.taobao.com/3GSPMYk"},
+{id:"vKoBx7Zt9f6we8dMqAF9WGt0te-6JDvNkuyXgq464RtG",name:"B站江科大UP主同款stm32开发板入门学习套件 stm32f103C8T6核心",img:"//img.alicdn.com/i4/2208077569814/O1CN01fZ8qvG2MMs0QbgUbS_!!4611686018427387670-0-item_pic.jpg",shop:"泽杰",leaf:"开发板/学习板/评估板/工控板",price:37.5,origPrice:49.18,sales:0,coupon:0,link:"https://s.click.taobao.com/8RcPMYk"},
+{id:"yR2o5M6Uef2Rj3yreoUr2QFvtA-aDgjzQTdJbPqrONTgy",name:"STM32F103C8T6开发板芯片单片机最小系统板核心板同款江科大科协",img:"//img.alicdn.com/i1/2207691322/O1CN01OOTUoP1LdWkTBwfWb_!!4611686018427384378-0-item_pic.jpg",shop:"TELESKY",leaf:"微处理器/微控制器/单片机",price:8,origPrice:12.3,sales:0,coupon:3,link:"https://s.click.taobao.com/djxOMYk"},
+{id:"2pPy7Q7TvfgNrxZdP6F6b0cDtD-yDy2bXTmVR967n5fQn",name:"STM32F103C8T6核心板C6T6开发板STM32单片机最小系统板C8T6学习板",img:"//img.alicdn.com/i3/2206446147687/O1CN01sl36BE26ehgFQmCJT_!!4611686018427385959-0-item_pic.jpg",shop:"LSSZ/绿深",leaf:"开发板/学习板/评估板/工控板",price:5.85,origPrice:6.5,sales:0,coupon:0,link:"https://s.click.taobao.com/cchPMYk"},
+{id:"R3Nz2nnIafjr7D6Q9ZHkA0tMt6-MdDWmzTVOMZxxdosw",name:"STM32F401RCT6/STM32F401CCU6核心板系统板 开发板MicroPython",img:"//img.alicdn.com/i1/2206821743459/O1CN010puDgf1bQH888UXoW_!!4611686018427386723-0-item_pic.jpg",shop:"TOUGLESY",leaf:"开发板/学习板/评估板/工控板",price:15.66,origPrice:17.46,sales:0,coupon:0,link:"https://s.click.taobao.com/ngDOMYk"},
+{id:"WXwp2mVcaf20K6mQYOUXmaUQta-MdDWmzTV99JMvVJcRV",name:"STM32F103C8T6最小系统板 STM32单片机开发板套件同款科协江科大",img:"//img.alicdn.com/i1/2207691322/O1CN01HikO5b1LdWkT4NJJn_!!4611686018427384378-0-item_pic.jpg",shop:"TELESKY",leaf:"微处理器/微控制器/单片机",price:5.97,origPrice:11.22,sales:0,coupon:3,link:"https://s.click.taobao.com/UjxOMYk"},
+{id:"qDa4ka0C0f4ZnV780QcDPWhWt0-qDxqwYTnAwOx5qdh0",name:"STM32F103C8T6小系统板 STM32单片机开发板核心板入门套件 C6T6",img:"//img.alicdn.com/i4/738263294/O1CN01j1hn8q1aChmP4eAuH_!!4611686018427379966-0-item_pic.jpg",shop:"RISYM/维芯",leaf:"开发板/学习板/评估板/工控板",price:10.54,origPrice:11.74,sales:0,coupon:0,link:"https://s.click.taobao.com/Lfl7KPk"},
+{id:"bBJ7XJ8fxfor3VZxyGizW7TQt6-yDy2bXT6zr8ZvJNUJ",name:"鹿小班STM32F103ZET6开发板STM32学习板ZET6核心板单片机系统板",img:"//img.alicdn.com/i4/2218942665800/O1CN01jFVdsx1siSCmmginF_!!4611686018427384904-0-item_pic.jpg",shop:"",leaf:"开发板/学习板/评估板/工控板",price:14.3,origPrice:15.9,sales:0,coupon:0,link:"https://s.click.taobao.com/HqA8KPk"},
+{id:"2vGp6GjUvfgNrx3aoyi6bZiDtD-0gVkDjSBRXjGm9khG",name:"STM32F103C8T6开发板C6T6 STM32单片机最小系统实验板b站江协科技",img:"//img.alicdn.com/i1/2206821743459/O1CN01ekbwG21bQH6djd5EE_!!4611686018427386723-0-item_pic.jpg",shop:"TOUGLESY",leaf:"开发板/学习板/评估板/工控板",price:9.06,origPrice:10.06,sales:0,coupon:0,link:"https://s.click.taobao.com/2bhPMYk"},
+{id:"ey9MQ9gSRfd27BzYDeS6Ydczt0-kyw0zXsgKPJzw92t6",name:"全新STM32G030C8T6开发板STM32G0学习板核心板评估板含例程主芯片",img:"//img.alicdn.com/i2/340765509/O1CN01QEvR251qZB4XnOaAi_!!340765509.jpg",shop:"STM32",leaf:"开发板/学习板/评估板/工控板",price:29,origPrice:34,sales:0,coupon:5,link:"https://s.click.taobao.com/DqA8KPk"},
+{id:"X08wq80CKfXv8zBg3Pt0aRcBtg-aDgjzQTd7y5J6y6IgW",name:"基于51/STM32单片机宠物自动喂食器设计定时定量系统成品WiFi远程",img:"//img.alicdn.com/i1/4079150495/O1CN01SVF11m1FWl5UXzi4I_!!4079150495.png",shop:"other",leaf:"微处理器/微控制器/单片机",price:89.1,origPrice:128,sales:0,coupon:0,link:"https://s.click.taobao.com/fbv7KPk"},
+{id:"75md6g2fMf58qk09nZU6pqCMtV-QdapKBTbkyqkkrxUbB",name:"树莓派项目设计基于stm32的单片机设计定做智能51单片机程序设计",img:"//img.alicdn.com/i2/2568158037/O1CN01RpjATn29F0J0ePeDr_!!2568158037.png",shop:"51Fans/51爱好者",leaf:"微处理器/微控制器/单片机",price:45,origPrice:50,sales:0,coupon:0,link:"https://s.click.taobao.com/daZ8KPk"},
+{id:"N6ZXd5QSgfG85Py9aAfY2wfRtB-7JDWAvuwDb2G02kc5",name:"STM32F103C8T6开发板芯片单片机最小系统板核心板c6t6 江科大套件",img:"//img.alicdn.com/i3/2201492025661/O1CN018ZQUEN1rgnHFImUa1_!!4611686018427384125-0-item_pic.jpg",shop:"欣薇",leaf:"开发板/学习板/评估板/工控板",price:6.44,origPrice:7.15,sales:0,coupon:0,link:"https://s.click.taobao.com/LkwPMYk"},
+{id:"omVP0dKF8fK6ro47Agf5ygsntN-eya0zqsGabQ80RXCQ",name:"STM32F103RCT6开发板/嵌入式学习STM32开发板最小系统板TFT屏",img:"//img.alicdn.com/i1/2206446147687/O1CN01jauIjx26ehcwSn2J9_!!4611686018427385959-0-item_pic.jpg",shop:"LSSZ/绿深",leaf:"开发板/学习板/评估板/工控板",price:10.7,origPrice:15.8,sales:0,coupon:0,link:"https://s.click.taobao.com/ES8OMYk"},
+{id:"joJ8ryAiAfJmojweDBuNwDUJte-ZmaNzqiAqzdaR6RIQ",name:"基于STM32单片机分贝仪检测设计环境噪音等级声音采集电子定制",img:"//img.alicdn.com/i3/4079150495/O1CN01jvkZGu1FWl5XBdag7_!!4079150495.png",shop:"other",leaf:"微处理器/微控制器/单片机",price:124,origPrice:168,sales:0,coupon:0,link:"https://s.click.taobao.com/IkwPMYk"},
+{id:"MRZXQbqIBfXvxAZY9gidZMtQtA-jOaqvkcXKGqxvY7cQ",name:"STM32F103C8T6开发板C8T6最小系统板C6T6核心板ARM实验板单片机",img:"//img.alicdn.com/i1/2206684547563/O1CN01htIcvs25juXlQB7xf_!!4611686018427382251-0-item_pic.jpg",shop:"菡诚",leaf:"开发板/学习板/评估板/工控板",price:6.39,origPrice:7.1,sales:0,coupon:0,link:"https://s.click.taobao.com/K7TOMYk"},
+{id:"Y6KJdVOfafXQyeabGacKQZc2t6-kyw0zXs8m8wgJ2JC5q",name:"STM32F103C8T6开发板芯片单片机最小系统板核心板c6t6 江科大科协",img:"//img.alicdn.com/i1/2206538403605/O1CN015dKEsH1cV8x3zRXCJ_!!4611686018427383573-0-item_pic.jpg",shop:"ZAVE",leaf:"开发板/学习板/评估板/工控板",price:7.37,origPrice:8.18,sales:0,coupon:0,link:"https://s.click.taobao.com/2KdOMYk"},
+{id:"87R8Pj8Cwf9zo4AZ7AIODzFbt8-wDPnxqTbaeBnkYbsdM",name:"STM32F103C8T6 STM32开发板最小系统板单片机核心板 学习板实验板",img:"//img.alicdn.com/i3/2207691322/O1CN01Q9zMpo1LdWkSltIQ0_!!4611686018427384378-0-item_pic.jpg",shop:"TELESKY",leaf:"开发板/学习板/评估板/工控板",price:8.55,origPrice:9.5,sales:0,coupon:0,link:"https://s.click.taobao.com/vnU8KPk"},
+{id:"AdxNBnWfgf4jkBDPaDt8GeSvtn-xDMZ8BTO70wDogaC4e",name:"STM32F103C8T6小系统板 STM32单片机开发板核心板入门套件 C6T6",img:"//img.alicdn.com/i4/2087020248/O1CN01VjxDFm1DhdHb4cncW_!!4611686018427381464-0-item_pic.jpg",shop:"ZAZR",leaf:"开发板/学习板/评估板/工控板",price:10.02,origPrice:11.22,sales:0,coupon:0,link:"https://s.click.taobao.com/VeiNMYk"},
+{id:"dYWjARMfbf3AYBPXzPT2njTet3-6JDvNkuyMY4ow47CW",name:"江科大推荐 STM32开发板套件STM32f103c8t6最小系统板 面包板科协",img:"//img.alicdn.com/i2/2217520791094/O1CN01sgAeQC1Jx6JQX3mqz_!!4611686018427387446-0-item_pic.jpg",shop:"YVZD",leaf:"微处理器/微控制器/单片机",price:44.5,origPrice:61.18,sales:0,coupon:0,link:"https://s.click.taobao.com/Jbl7KPk"},
+{id:"kDP3rn0tWfarwokeAkfBoqtPtJ-RBaNkQc2g9xVvvkU6p",name:"STM32F103C8T6小系统板 单片机 核心板 STM32开发板学习板单片机",img:"//img.alicdn.com/i1/1070042715/O1CN01GapZHv1VvWRYBTbF3_!!4611686018427383387-0-item_pic.jpg",shop:"TELESKY",leaf:"开发板/学习板/评估板/工控板",price:6.55,origPrice:9.5,sales:0,coupon:2,link:"https://s.click.taobao.com/onU8KPk"},
+{id:"KX0DVMWtJfoA0w6vxDtOv2FJtW-kyw0zXs8myWOA3ou5R",name:"鹿小班 STM32F103C8T6 mini单片机开发板 最小系统板C8T6核心板",img:"//img.alicdn.com/i1/2211912658430/O1CN01SXj7172C8zqBwqWOW_!!2211912658430.jpg",shop:"",leaf:"开发板/学习板/评估板/工控板",price:10.8,origPrice:18.8,sales:0,coupon:5,link:"https://s.click.taobao.com/wjK8KPk"},
+{id:"6dj8eWDFJfGxVMB26AsVRMHot3-mDpQYXT7PJXo9OqfYN",name:"定制STM32单片机智能手环设计系统血氧浓度心率体温计步器成品",img:"//img.alicdn.com/i3/2206567198359/O1CN01jKC6wX2BcTdj11ZVP_!!2206567198359.jpg",shop:"",leaf:"微处理器/微控制器/单片机",price:71.1,origPrice:158,sales:0,coupon:0,link:"https://s.click.taobao.com/pIcPMYk"},
+{id:"2qoNGeGcvfgNrx3abMT6b4HDtD-yDy2bXTmPybOwpZUQ",name:"AS608指纹模块 光学指纹识别 有51/STM32/arduino例程 指纹锁考勤",img:"//img.alicdn.com/i3/2206446147687/O1CN01I8D6LU26ehhY8kGov_!!4611686018427385959-0-item_pic.jpg",shop:"LSSZ/绿深",leaf:"开发板/学习板/评估板/工控板",price:11.5,origPrice:61.2,sales:0,coupon:0,link:"https://s.click.taobao.com/jY2PMYk"},
+{id:"3dDAGpjIgfY6PKqOAXCXJgu9tJ-6JDvNkuyjObm2eVFKz",name:"STM32F103C8T6最小系统板stm32开发板mini单片机C8T6核心板",img:"//img.alicdn.com/i3/2206684547563/O1CN01gdLseq25juS4oh9NZ_!!4611686018427382251-0-item_pic.jpg",shop:"菡诚",leaf:"开发板/学习板/评估板/工控板",price:10.7,origPrice:18.8,sales:0,coupon:0,link:"https://s.click.taobao.com/QVhPMYk"},
+{id:"Z8jk5XefafPdaXONbAtJpxuVt6-MdDWmzT4k2qnJ9Rcw",name:"STM32F103RCT6系统板 32开发板核心板 ISP一键下载 双typec接口",img:"//img.alicdn.com/i2/2209130806501/O1CN01WGtaqa1xtVtyIsBob_!!4611686018427387109-0-item_pic.jpg",shop:"贝科姆",leaf:"开发板/学习板/评估板/工控板",price:10.7,origPrice:11.9,sales:0,coupon:0,link:"https://s.click.taobao.com/TbrPMYk"},
+{id:"O0KBDgigf6vxRN2wwsVAoUMtJ-6JDvNkuvZePRax8iq",name:"贝科姆 STM32F405RGT6系统板开发板核心板SPISWD仿真接口 type-c",img:"//img.alicdn.com/i3/2209130806501/O1CN01dtbyTg1xtVu3m8Qkr_!!4611686018427387109-0-item_pic.jpg",shop:"贝科姆",leaf:"开发板/学习板/评估板/工控板",price:12.4,origPrice:11.8,sales:0,coupon:0,link:"https://s.click.taobao.com/JF3OMYk"},
+{id:"pgyqz6t3f6MgNqodds5p9Hptm-gjYngkTpzWND7jJfn",name:"鹿小班STM32F407VET6开发板ARM最小系统板VET6核心板F407学习板",img:"//img.alicdn.com/i3/2218942665800/O1CN01Iwz8uH1siSJoQhZ40_!!4611686018427384904-0-item_pic.jpg",shop:"",leaf:"开发板/学习板/评估板/工控板",price:9.7,origPrice:10.8,sales:0,coupon:0,link:"https://s.click.taobao.com/6RdNMYk"},
+{id:"oYy5zPT8fK6ro47wwf5yMfntN-X0Kezri0AADVV3kuZ",name:"STM32F103C8T6小系统板 STM32单片机开发板核心板入门套件 C6T6",img:"//img.alicdn.com/i4/2217520791094/O1CN01Rcs3iq1Jx6PhSJIHv_!!4611686018427387446-0-item_pic.jpg",shop:"YVZD",leaf:"开发板/学习板/评估板/工控板",price:7.84,origPrice:5.97,sales:0,coupon:0,link:"https://s.click.taobao.com/5yHPMYk"},
+{id:"Jr93OMFgfqNORvg66UYzVCvta-eya0zqsG9XNOxj3U9o",name:"基于51/STM32单片机火灾烟雾温度报警器系统设计电子火焰远程WiFi",img:"//img.alicdn.com/i1/4079150495/O1CN01rW59xf1FWkyo9UYYp_!!4079150495.jpg",shop:"other",leaf:"微处理器/微控制器/单片机",price:70.5,origPrice:98,sales:0,coupon:0,link:"https://s.click.taobao.com/oUg7KPk"},
+{id:"0xz2DbTdf8B52nG33C6M3f2t6-dygBz3snM0rvqxvSW",name:"STM32F401 411开发板 STM32F401CCU6 32F4核心板 小系统板 学习板",img:"//img.alicdn.com/i4/2207691322/O1CN01qcUQni1LdWkSplG7z_!!4611686018427384378-0-item_pic.jpg",shop:"TELESKY",leaf:"开发板/学习板/评估板/工控板",price:31.12,origPrice:40.88,sales:0,coupon:2,link:"https://s.click.taobao.com/04yNMYk"},
+{id:"Pn6a5bVSof6vKZ2G2aHxj5UPt6-rD8PeoTMObep8j3UX",name:"基于STM32F103 单片机红外人体热释电家居家庭防盗报警器设计成品",img:"//img.alicdn.com/i3/797135282/O1CN01ebxH201otCgFej3ha_!!797135282.jpg",shop:"",leaf:"微处理器/微控制器/单片机",price:68,origPrice:60,sales:0,coupon:2,link:"https://s.click.taobao.com/JD3OMYk"},
+{id:"6bxNYWPHJfGxVMBKBRFVGQuot3-rD8PeoT2mb4DG43S9",name:"STM32F401 411开发板 STM32F401CCU6 32F4核心板 小系统板 学习板",img:"//img.alicdn.com/i2/738263294/O1CN01KWH7sq1aChmOYPs0p_!!4611686018427379966-0-item_pic.jpg",shop:"RISYM/维芯",leaf:"开发板/学习板/评估板/工控板",price:20.61,origPrice:22.91,sales:0,coupon:0,link:"https://s.click.taobao.com/mOdNMYk"},
+{id:"K6o2AMYtJfoA0w6n6VIOjoTJtW-pDW7zXTgr24ojVRT4",name:"ST-LINK V2 STLINK STM8 STM32下载器仿真开发板烧写编程烧录调试",img:"//img.alicdn.com/i1/2206688171198/O1CN01wz0BMi1KijdaZEnXP_!!4611686018427385022-0-item_pic.jpg",shop:"THRYCY/瑟雷西",leaf:"仿真器/下载器",price:14.8,origPrice:47,sales:0,coupon:0,link:"https://s.click.taobao.com/4gK8KPk"},
+{id:"xm68GXYhZfq9gy4J4atRoRtAt9-9wKVx8sOwkNow3oIr4",name:"STM32H723ZGT6核心板STM32单片机开发板stm32最小系统版沉金工艺",img:"//img.alicdn.com/i3/2209130806501/O1CN01sMafLl1xtVu5L0JnU_!!4611686018427387109-0-item_pic.jpg",shop:"贝科姆",leaf:"开发板/学习板/评估板/工控板",price:10.7,origPrice:89.8,sales:0,coupon:0,link:"https://s.click.taobao.com/hXrPMYk"},
+{id:"758AYxNiMf58qk0V03U6pzuMtV-MdDWmzTVnrRNxDdhy",name:"STM32F103C8T6小系统板 STM32单片机开发板核心板入门套件 C6T6",img:"//img.alicdn.com/i3/2206821743459/O1CN01z4hOth1bQH7iiCd2A_!!4611686018427386723-0-item_pic.jpg",shop:"TOUGLESY",leaf:"微处理器/微控制器/单片机",price:6.41,origPrice:6.83,sales:0,coupon:0,link:"https://s.click.taobao.com/jU2PMYk"},
+{id:"O09nRnWhgf6vxRN8dWTVAeCMtJ-JkDPObiaZ3ABZ6XTx",name:"STM32F103C8T6芯片单片机开发板最小系统板核心板c6t6 江科大套件",img:"//img.alicdn.com/i4/2206821743459/O1CN01rxmo091bQH4ACmYm9_!!4611686018427386723-0-item_pic.jpg",shop:"TOUGLESY",leaf:"微处理器/微控制器/单片机",price:6.8,origPrice:8,sales:0,coupon:0,link:"https://s.click.taobao.com/kpNOMYk"},
+{id:"dYWjARMfbf3AYBPXzPT2njTet3-6JDvNkuyMY4ow47CWb",name:"STM32F103C8T6 STM32开发板最小系统板单片机核心板 学习板实验板",img:"//img.alicdn.com/i1/2207691322/O1CN01Q9zMpo1LdWkSltIQ0_!!4611686018427384378-0-item_pic.jpg",shop:"TELESKY",leaf:"开发板/学习板/评估板/工控板",price:8.55,origPrice:9.5,sales:0,coupon:0,link:"https://s.click.taobao.com/vnU8KPk"},
+{id:"7bdG5KpXUbf7vN2H8qRf9T3mBu0-pDxqwYTbkyqkkrxUbC",name:"STM32F103C8T6开发板芯片单片机最小系统板核心板 江科大套件",img:"//img.alicdn.com/i2/738263294/O1CN01YEuNAB1aChmOq3z7a_!!4611686018427379966-0-item_pic.jpg",shop:"RISYM/维芯",leaf:"微处理器/微控制器/单片机",price:6.44,origPrice:7.15,sales:0,coupon:0,link:"https://s.click.taobao.com/LkwPMYk"}
+];
+
+// ==================== 分类配置 ====================
+const CATEGORIES = [
+  { label: '全部', key: 'all' },
+  { label: '开发板·核心板', key: '开发板' },
+  { label: '单片机·控制器', key: '微控制器' },
+  { label: '机器人', key: '机器人' },
+  { label: '仿真器·下载器', key: '仿真器' }
+];
+
+let currentCat = 'all';
+let searchKeyword = '';
+
+// ==================== 初始化 ====================
+document.getElementById('totalCount').textContent = PRODUCTS.length;
+
+function buildFilterBtns() {
+  const container = document.getElementById('filterBtns');
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (cat.key === 'all' ? ' active' : '');
+    btn.textContent = cat.label;
+    btn.dataset.key = cat.key;
+    btn.onclick = () => {
+      currentCat = cat.key;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function highlightText(text, keyword) {
+  if (!keyword) return text;
+  const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return text.replace(regex, '<span class="search-highlight">$1</span>');
+}
+
+// ==================== 渲染 ====================
+function getFiltered() {
+  let list = [...PRODUCTS];
+
+  // 分类筛选
+  if (currentCat !== 'all') {
+    if (currentCat === '开发板') {
+      list = list.filter(p => p.leaf.includes('开发板'));
+    } else if (currentCat === '微控制器') {
+      list = list.filter(p => p.leaf.includes('微控制器') || p.leaf.includes('单片机'));
+    } else if (currentCat === '机器人') {
+      list = list.filter(p => p.leaf.includes('机器人'));
+    } else if (currentCat === '仿真器') {
+      list = list.filter(p => p.leaf.includes('仿真器') || p.leaf.includes('下载'));
+    }
+  }
+
+  // 搜索
+  if (searchKeyword.trim()) {
+    const kw = searchKeyword.trim().toLowerCase();
+    list = list.filter(p =>
+      p.name.toLowerCase().includes(kw) ||
+      p.leaf.toLowerCase().includes(kw) ||
+      (p.shop && p.shop.toLowerCase().includes(kw))
+    );
+  }
+
+  // 排序
+  const sort = document.getElementById('sortSelect').value;
+  if (sort === 'price_asc') list.sort((a, b) => a.price - b.price);
+  else if (sort === 'price_desc') list.sort((a, b) => b.price - a.price);
+  else if (sort === 'sales_desc') list.sort((a, b) => b.sales - a.sales);
+
+  return list;
+}
+
+function render() {
+  const grid = document.getElementById('productGrid');
+  const resultsBar = document.getElementById('resultsBar');
+  const filteredCount = document.getElementById('filteredCount');
+  const filterTag = document.getElementById('filterTag');
+
+  const list = getFiltered();
+  filteredCount.textContent = list.length;
+  resultsBar.style.display = searchKeyword || currentCat !== 'all' ? 'flex' : 'none';
+
+  if (searchKeyword && currentCat !== 'all') {
+    filterTag.textContent = `分类：${CATEGORIES.find(c => c.key === currentCat)?.label} | 关键词：${searchKeyword}`;
+  } else if (searchKeyword) {
+    filterTag.textContent = `关键词："${searchKeyword}"`;
+  } else if (currentCat !== 'all') {
+    filterTag.textContent = `分类：${CATEGORIES.find(c => c.key === currentCat)?.label}`;
+  }
+
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <path d="M8 11h6M11 8v6" opacity="0.5"/>
+        </svg>
+        <h3>没有找到符合条件的商品</h3>
+        <p>试试换个关键词，或切换其他分类</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map((p, i) => {
+    const imgUrl = p.img.startsWith('//') ? 'https:' + p.img : p.img;
+    const hasDiscount = p.origPrice > p.price;
+    const hasCoupon = p.coupon > 0;
+    const isHot = p.price < 15 && p.origPrice < 20;
+    const delay = i * 40;
+
+    let badge = '';
+    if (hasCoupon) badge = `<span class="card-badge">券${p.coupon}元</span>`;
+    else if (isHot) badge = `<span class="card-badge hot">热卖</span>`;
+
+    const shopDisplay = p.shop && p.shop !== 'other' ? `<div class="card-shop">${p.shop}</div>` : '';
+
+    // 分类标签
+    let catLabel = p.leaf.split('/').pop();
+    if (catLabel.includes('单片机')) catLabel = '单片机';
+    if (catLabel.includes('开发板')) catLabel = '开发板';
+    if (catLabel.includes('仿真')) catLabel = '仿真器';
+
+    return `
+    <a href="${p.link}" target="_blank" rel="noopener noreferrer" class="product-card" style="animation-delay:${delay}ms">
+      <div class="card-img-wrap">
+        <img src="${imgUrl}" alt="${p.name}" loading="lazy"
+             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 300%27%3E%3Crect fill=%27%23111827%27 width=%27400%27 height=%27300%27/%3E%3Ctext x=%27200%27 y=%27155%27 text-anchor=%27middle%27 font-size=%2724%27 fill=%27%23374151%27%3E暂无图片%3C/text%3E%3C/svg%3E'">
+        ${badge}
+        <div class="card-img-overlay"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${highlightText(p.name, searchKeyword)}</div>
+        <div class="card-meta">
+          <span class="card-tag">${catLabel}</span>
+          ${p.shop && p.shop !== 'other' ? `<span class="card-tag brand">${p.shop}</span>` : ''}
+        </div>
+        ${shopDisplay}
+        <div class="card-bottom">
+          <div class="card-price">
+            <span class="price-main"><span class="rmb">¥</span>${p.price.toFixed(2)}</span>
+            ${hasDiscount ? `<span class="price-orig">¥${p.origPrice.toFixed(2)}</span>` : ''}
+          </div>
+          <div class="card-sales">
+            ${p.sales > 0 ? `<span class="sales-num">${p.sales.toLocaleString()}</span><span>月销</span>` : '<span style="color:var(--text3);font-size:12px">精选推荐</span>'}
+          </div>
+        </div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+// ==================== 搜索 ====================
+const searchInput = document.getElementById('searchInput');
+const clearBtn = document.getElementById('clearBtn');
+let searchTimer;
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchKeyword = searchInput.value;
+    clearBtn.classList.toggle('show', searchKeyword.length > 0);
+    render();
+  }, 250);
+});
+
+function clearSearch() {
+  searchInput.value = '';
+  searchKeyword = '';
+  clearBtn.classList.remove('show');
+  render();
+  searchInput.focus();
+}
+
+// 回车搜索
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') render();
+});
+
+// ==================== 回到顶部 ====================
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('backTop');
+  btn.classList.toggle('show', window.scrollY > 400);
+});
+
+// ==================== 启动 ====================
+buildFilterBtns();
+render();
+</script>
+</body>
+</html>
