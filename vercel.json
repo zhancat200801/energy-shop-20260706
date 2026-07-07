@@ -1,7 +1,12 @@
 {
-  "outputDirectory": ".",
-  "routes": [
-    {"src": "/", "dest": "/index.html"},
-    {"src": "/stm32_product_list", "dest": "/stm32_product_list.html"}
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/stm32_product_list",
+      "destination": "/stm32_product_list.html"
+    }
   ]
 }
